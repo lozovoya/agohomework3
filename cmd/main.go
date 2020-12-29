@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"github.com/go-chi/chi"
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/lozovoya/agohomework3/cmd/app"
 	"log"
 	"net"
 	"net/http"
@@ -13,7 +15,6 @@ const defaultPort = "9999"
 const defaultHost = "0.0.0.0"
 const clientsDb = "postgres://app:pass@clientsdb:5432/db"
 const suggestionDb = "mongodb://app:pass@suggestiondb:27017/db"
-
 
 func main() {
 	port, ok := os.LookupEnv("PORT")
@@ -37,13 +38,20 @@ func execute(addr string, cliDb string, sugDb string) error {
 	mux := chi.NewMux()
 
 	ctxCLiDb := context.Background()
-	pool, err := p
+	poolCli, err := pgxpool.Connect(ctxCLiDb, clientsDb)
 	if err != nil {
 		return err
 	}
-	defer pool.Close()
+	defer poolCli.Close()
 
-	application := app.NewServer(mux, pool, ctx)
+	ctxSugDb := context.Background()
+	poolSug, err := pgxpool.Connect(ctxSugDb, sugDb)
+	if err != nil {
+		return err
+	}
+	defer poolSug.Close()
+
+	application := app.NewServer(mux, poolCli, ctxCLiDb, poolSug, ctxSugDb)
 	err = application.Init()
 	if err != nil {
 		return err
@@ -56,4 +64,3 @@ func execute(addr string, cliDb string, sugDb string) error {
 
 	return server.ListenAndServe()
 }
-
