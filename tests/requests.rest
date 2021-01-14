@@ -1,0 +1,12 @@
+###
+
+GET http://localhost:9999/payments
+
+###
+
+POST http://localhost:9999/payments
+Content-Type: application/json
+
+{
+  "token":"$2a$04$zWiNgAN9OXAX9iEFsqYXyuXxtXgEOn5qOIpw4x9Wnp6DJsTAOwnpO"
+}
