@@ -8,5 +8,18 @@ POST http://localhost:9999/payments
 Content-Type: application/json
 
 {
-  "token":"$2a$04$zWiNgAN9OXAX9iEFsqYXyuXxtXgEOn5qOIpw4x9Wnp6DJsTAOwnpO"
+  "token":"$2a$04$zWiNgAN9OXAX9iEFsqYXyuXxtXgEOn5qOIpw4x9Wnp6DJsTAOwnp2"
+}
+
+###
+POST http://localhost:9999/addsuggestion
+Content-Type: application/json
+
+{
+  "token":"$2a$04$zWiNgAN9OXAX9iEFsqYXyuXxtXgEOn5qOIpw4x9Wnp6DJsTAOwnp4",
+  "userid": 2,
+  "sugid":879,
+  "icon":"dshfdsf",
+  "title":"dgfdgfdg",
+  "link":"dsffsg"
 }

@@ -20,6 +20,16 @@ func (c *contextKey) String() string {
 	return c.name
 }
 
+func GetToken(r *http.Request) string {
+	token, _ := r.Context().Value(identifierContextKey).(*string)
+	return *token
+}
+
+func GetUserId(r *http.Request) int {
+	userid, _ := r.Context().Value(userIdContextKey).(*int)
+	return *userid
+}
+
 func IdentMD(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -27,16 +37,18 @@ func IdentMD(handler http.Handler) http.Handler {
 		err := json.NewDecoder(r.Body).Decode(&token)
 		if err != nil {
 			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
-		if token.Token != "" {
-			ctx := context.WithValue(r.Context(), identifierContextKey, &token.Token)
-			r = r.WithContext(ctx)
-			log.Println(token.Token)
-			handler.ServeHTTP(w, r)
+		if token.Token == "" {
+			w.WriteHeader(http.StatusForbidden)
+			return
 		}
-
-		//w.WriteHeader(500)
+		ctx := context.WithValue(r.Context(), identifierContextKey, &token.Token)
+		r = r.WithContext(ctx)
+		log.Println(token)
+		handler.ServeHTTP(w, r)
 	})
 }
 
@@ -44,62 +56,46 @@ func AuthMD(poolCli *pgxpool.Pool, ctxCli context.Context) func(http.Handler) ht
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			token, ok := r.Context().Value(identifierContextKey).(*string)
-			if !ok {
-				log.Println("token error")
-				w.WriteHeader(500)
-				return
-			}
+			token := GetToken(r)
 
-			var user struct {
-				login string
-			}
-
+			var userid = 0
 			err := poolCli.QueryRow(ctxCli,
-				"SELECT login FROM users WHERE token = $1", token).Scan(&user.login)
+				"SELECT id FROM users WHERE token = $1", token).Scan(&userid)
 			if err != nil {
 				log.Println(err)
-				w.WriteHeader(500)
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			if user.login != "" {
-				ctx := context.WithValue(r.Context(), userIdContextKey, &user.login)
-				r = r.WithContext(ctx)
-				log.Println(user.login)
-				handler.ServeHTTP(w, r)
+			if userid == 0 {
+				w.WriteHeader(http.StatusNotFound)
+				return
 			}
 
-			w.WriteHeader(500)
-			return
+			ctx := context.WithValue(r.Context(), userIdContextKey, &userid)
+			r = r.WithContext(ctx)
+			log.Println(ctx)
+			handler.ServeHTTP(w, r)
 		})
 	}
 }
 
-func IsRole(role string, poolCli *pgxpool.Pool, ctxCli context.Context) func(http.Handler) http.Handler {
+func IsRole(requestRole string, poolCli *pgxpool.Pool, ctxCli context.Context) func(http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-			token, ok := r.Context().Value(identifierContextKey).(*string)
-			if !ok {
-				log.Println("token error")
-				w.WriteHeader(500)
-				return
-			}
+			token := GetToken(r)
 
-			var user struct {
-				role string
-			}
-
+			var userRole string
 			err := poolCli.QueryRow(ctxCli,
-				"SELECT role FROM users WHERE token = $1", token).Scan(&user.role)
+				"SELECT role FROM users WHERE token = $1", token).Scan(&userRole)
 			if err != nil {
 				log.Println(err)
-				w.WriteHeader(500)
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
-			if user.role != role {
+			if userRole != requestRole {
 				w.WriteHeader(http.StatusForbidden)
 				return
 			}
