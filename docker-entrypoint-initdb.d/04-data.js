@@ -1,4 +1,3 @@
-
 db.users.insertOne({
         userid: 1,
         name: 'user1',
@@ -17,7 +16,6 @@ db.users.insertOne({
         ]
     }
 );
-
 db.users.insertOne({
         userid: 2,
         name: 'user2',
@@ -36,7 +34,6 @@ db.users.insertOne({
         ]
     }
 );
-
 db.users.insertOne({
         userid: 3,
         name: 'user3',

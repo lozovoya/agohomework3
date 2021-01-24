@@ -1,19 +1,16 @@
-###
-
+### без токена
 GET http://localhost:9999/payments
 
-###
-
+### Список операций и предсказаний
 GET http://localhost:9999/payments?token=$2a$04$zWiNgAN9OXAX9iEFsqYXyuXxtXgEOn5qOIpw4x9Wnp6DJsTAOwnp2
 
-###
-POST http://localhost:9999/addsuggestion
+### Добавить предсказание
+POST http://localhost:9999/addsuggestion?token=$2a$04$zWiNgAN9OXAX9iEFsqYXyuXxtXgEOn5qOIpw4x9Wnp6DJsTAOwnp4
 Content-Type: application/json
 
 {
-  "token":"$2a$04$zWiNgAN9OXAX9iEFsqYXyuXxtXgEOn5qOIpw4x9Wnp6DJsTAOwnp4",
   "userid": 2,
-  "sugid":879,
+  "sugid":8790,
   "icon":"dshfdsf",
   "title":"dgfdgfdg",
   "link":"dsffsg"

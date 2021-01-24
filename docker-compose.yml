@@ -21,4 +21,4 @@ services:
     environment:
       - MONGO_INITDB_DATABASE=db
     volumes:
-      - ./docker-entrypoint-initmondb.d:/docker-entrypoint-initmondb.d:ro
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
