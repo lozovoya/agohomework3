@@ -61,7 +61,7 @@ func (s *Server) Init() error {
 	authMd := md.AuthMD
 
 	s.mux.With(logMd, identMd, roleCheckerMd("USER", s.poolCli, s.ctxCli),
-		authMd(s.poolCli, s.ctxCli)).Post("/payments", s.Payments)
+		authMd(s.poolCli, s.ctxCli)).Get("/payments", s.Payments)
 	s.mux.With(logMd, identMd, roleCheckerMd("SERVICE", s.poolCli, s.ctxCli),
 		authMd(s.poolCli, s.ctxCli)).Post("/addsuggestion", s.AddSuggestion)
 
@@ -101,7 +101,7 @@ func (s *Server) AddSuggestion(w http.ResponseWriter, r *http.Request) {
 	var userid = 0
 	userid = md.GetUserId(r)
 	if userid == 0 {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusNotFound)
 		return
 	}
 

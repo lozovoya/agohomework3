@@ -1,5 +1,5 @@
 
-db.users.insertOne ({
+db.users.insertOne({
         userid: 1,
         name: 'user1',
         account: '734535t743',
@@ -18,7 +18,7 @@ db.users.insertOne ({
     }
 );
 
-db.users.insertOne ({
+db.users.insertOne({
         userid: 2,
         name: 'user2',
         account: '645943587935',
@@ -37,7 +37,7 @@ db.users.insertOne ({
     }
 );
 
-db.users.insertOne ({
+db.users.insertOne({
         userid: 3,
         name: 'user3',
         account: '38275945',

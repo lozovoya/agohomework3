@@ -2,9 +2,7 @@ package md
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/lozovoya/agohomework3/cmd/app/dto"
 	"log"
 	"net/http"
 )
@@ -33,19 +31,12 @@ func GetUserId(r *http.Request) int {
 func IdentMD(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		var token *dto.TokenDTO
-		err := json.NewDecoder(r.Body).Decode(&token)
-		if err != nil {
-			log.Println(err)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		if token.Token == "" {
+		token := r.URL.Query().Get("token")
+		if token == "" {
 			w.WriteHeader(http.StatusForbidden)
 			return
 		}
-		ctx := context.WithValue(r.Context(), identifierContextKey, &token.Token)
+		ctx := context.WithValue(r.Context(), identifierContextKey, &token)
 		r = r.WithContext(ctx)
 		log.Println(token)
 		handler.ServeHTTP(w, r)
