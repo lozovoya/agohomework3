@@ -59,7 +59,7 @@ func AuthMD(poolCli *pgxpool.Pool, ctxCli context.Context) func(http.Handler) ht
 			}
 
 			if userid == 0 {
-				w.WriteHeader(http.StatusNotFound)
+				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
 

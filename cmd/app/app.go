@@ -73,7 +73,7 @@ func (s *Server) Payments(w http.ResponseWriter, r *http.Request) {
 	var userid = 0
 	userid = md.GetUserId(r)
 	if userid == 0 {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -101,7 +101,7 @@ func (s *Server) AddSuggestion(w http.ResponseWriter, r *http.Request) {
 	var userid = 0
 	userid = md.GetUserId(r)
 	if userid == 0 {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -109,7 +109,7 @@ func (s *Server) AddSuggestion(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&newSuggestion)
 	if err != nil {
 		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -130,7 +130,7 @@ func (s *Server) AddSuggestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if result == nil {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
